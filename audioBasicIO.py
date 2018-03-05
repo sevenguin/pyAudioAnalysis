@@ -2,6 +2,8 @@ import os, glob, eyed3, ntpath, shutil, numpy
 import scipy.io.wavfile as wavfile
 import pydub
 from pydub import AudioSegment
+import pdb
+
 
 def convertDirMP3ToWav(dirName, Fs, nC, useMp3TagsAsName = False):
     '''
@@ -35,7 +37,7 @@ def convertDirMP3ToWav(dirName, Fs, nC, useMp3TagsAsName = False):
         else:
             wavFileName = f.replace(".mp3",".wav")      
         command = "avconv -i \"" + f + "\" -ar " +str(Fs) + " -ac " + str(nC) + " \"" + wavFileName + "\"";
-        print command
+        print(command)
         os.system(command.decode('unicode_escape').encode('ascii','ignore').replace("\0",""))
 
 def convertFsDirWavToWav(dirName, Fs, nC):
@@ -61,7 +63,7 @@ def convertFsDirWavToWav(dirName, Fs, nC):
     for f in filesToProcess:    
         _, wavFileName = ntpath.split(f)    
         command = "avconv -i \"" + f + "\" -ar " +str(Fs) + " -ac " + str(nC) + " \"" + newDir + os.sep + wavFileName + "\"";
-        print command
+        print(command)
         os.system(command)
 
 def readAudioFile(path):
@@ -69,7 +71,7 @@ def readAudioFile(path):
     This function returns a numpy array that stores the audio samples of a specified WAV of AIFF file
     '''
     extension = os.path.splitext(path)[1]
-
+    #pdb.set_trace()
     try:
         #if extension.lower() == '.wav':
             #[Fs, x] = wavfile.read(path)
@@ -84,7 +86,7 @@ def readAudioFile(path):
                 audiofile = AudioSegment.from_file(path)
             #except pydub.exceptions.CouldntDecodeError:
             except:
-                print "Error: file not found or other I/O error. (DECODING FAILED)"
+                print("Error: file not found or other I/O error. (DECODING FAILED)")
                 return (-1,-1)                
 
             if audiofile.sample_width==2:                
@@ -95,14 +97,14 @@ def readAudioFile(path):
                 return (-1, -1)
             Fs = audiofile.frame_rate
             x = []
-            for chn in xrange(audiofile.channels):
+            for chn in range(audiofile.channels):
                 x.append(data[chn::audiofile.channels])
             x = numpy.array(x).T
         else:
-            print "Error in readAudioFile(): Unknown file type!"
+            print("Error in readAudioFile(): Unknown file type!")
             return (-1,-1)
     except IOError: 
-        print "Error: file not found or other I/O error."
+        print("Error: file not found or other I/O error.")
         return (-1,-1)
 
     if x.ndim==2:
